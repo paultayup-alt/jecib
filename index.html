@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEFATURA DE CIBERDEFENSA FAE</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#060e0a}
+body{font-family:"Rajdhani",sans-serif;color:#c0ffd0;display:flex;flex-direction:column}
+
+/* ─── HEADER ─── */
+header{
+  background:rgba(4,12,8,0.97);
+  border-bottom:1px solid #1a4a28;
+  height:58px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  position:relative;z-index:200;
+}
+header::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#00ff88,#00ffcc,#00ff88,transparent);
+  animation:hline 4s ease-in-out infinite;
+}
+@keyframes hline{0%,100%{opacity:.3}50%{opacity:1}}
+
+.hlogo{display:flex;align-items:center;gap:10px}
+.hlogo img{
+  width:46px;height:46px;border-radius:50%;
+  border:2px solid rgba(0,255,136,.5);
+  box-shadow:0 0 12px rgba(0,255,136,.3);
+}
+.htitles h1{
+  font-size:15px;font-weight:700;color:#00ff88;
+  text-transform:uppercase;letter-spacing:1.5px;line-height:1.1;
+}
+.htitles p{
+  font-size:9.5px;color:#3a8a5a;letter-spacing:1px;text-transform:uppercase;margin-top:1px;
+}
+
+.hclock{text-align:center}
+.hclock .t{
+  font-family:"Share Tech Mono",monospace;
+  font-size:22px;font-weight:700;color:#00ff88;
+  letter-spacing:3px;line-height:1;
+  text-shadow:0 0 10px rgba(0,255,136,.6);
+}
+.hclock .s{font-size:9px;color:#2a6a3a;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+.hright{display:flex;align-items:center;gap:10px}
+.btnv{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.35);
+  color:#00ff88;padding:7px 14px;border-radius:5px;
+  font-family:"Rajdhani",sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:.2s;letter-spacing:.5px;text-transform:uppercase;
+}
+.btnv:hover{background:rgba(0,255,136,.18);border-color:rgba(0,255,136,.7)}
+.btnv:disabled{opacity:.4;cursor:not-allowed}
+.spin{display:inline-block;animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ─── MAIN LAYOUT ─── */
+.main{display:grid;grid-template-columns:300px 1fr 220px;flex:1;min-height:0;overflow:hidden}
+
+/* ─── LEFT PANEL: ENDPOINTS ─── */
+.left{
+  background:rgba(4,12,8,.95);border-right:1px solid #143020;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.panel-hdr{
+  padding:8px 12px;border-bottom:1px solid #143020;
+  font-family:"Share Tech Mono",monospace;font-size:9px;
+  color:#1a6a3a;letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.panel-hdr .dot{width:5px;height:5px;border-radius:50%;background:#00ff88;box-shadow:0 0 4px #00ff88;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.ep-scroll{flex:1;overflow-y:auto;padding:8px}
+.ep-scroll::-webkit-scrollbar{width:3px}
+.ep-scroll::-webkit-scrollbar-thumb{background:#1a4028;border-radius:2px}
+
+/* Stat strip */
+.ep-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid #143020;border-top:1px solid #143020;
+  flex-shrink:0;
+}
+.ep-stat{
+  padding:8px 6px;text-align:center;border-right:1px solid #143020;
+}
+.ep-stat:last-child{border-right:none}
+.ep-stat .n{font-size:18px;font-weight:700;line-height:1}
+.ep-stat .n.g{color:#00ff88;text-shadow:0 0 8px rgba(0,255,136,.5)}
+.ep-stat .n.r{color:#ff4060;text-shadow:0 0 8px rgba(255,64,96,.5)}
+.ep-stat .n.a{color:#ffb020;text-shadow:0 0 8px rgba(255,176,32,.5)}
+.ep-stat .l{font-size:8.5px;color:#2a6a3a;margin-top:2px;letter-spacing:.3px}
+
+/* URL Card */
+.uc{
+  background:rgba(6,18,10,.9);border:1px solid #143020;
+  border-radius:6px;margin-bottom:7px;padding:10px 11px;
+  position:relative;overflow:hidden;transition:.2s;
+}
+.uc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.uc.online::before{background:linear-gradient(90deg,#00ff88,transparent)}
+.uc.offline::before{background:linear-gradient(90deg,#ff4060,transparent)}
+.uc.checking::before{background:linear-gradient(90deg,#ffb020,transparent);animation:shim 1s ease-in-out infinite}
+@keyframes shim{0%,100%{opacity:.3}50%{opacity:1}}
+
+.uc-row1{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.uc-ico{
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+}
+.uc.online .uc-ico{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25)}
+.uc.offline .uc-ico{background:rgba(255,64,96,.08);border:1px solid rgba(255,64,96,.25)}
+.uc.checking .uc-ico{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.25)}
+
+.uc-info{flex:1;min-width:0}
+.uc-name{font-size:11.5px;font-weight:700;color:#a0f0c0;margin-bottom:1px}
+.uc-url{
+  font-family:"Share Tech Mono",monospace;font-size:7.5px;
+  color:#1a5030;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.uc-badge{
+  flex-shrink:0;display:flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.uc.online .uc-badge{background:rgba(0,255,136,.08);color:#00ff88;border:1px solid rgba(0,255,136,.25)}
+.uc.offline .uc-badge{background:rgba(255,64,96,.08);color:#ff4060;border:1px solid rgba(255,64,96,.25)}
+.uc.checking .uc-badge{background:rgba(255,176,32,.08);color:#ffb020;border:1px solid rgba(255,176,32,.25)}
+.bdot{width:4px;height:4px;border-radius:50%}
+.uc.online .bdot{background:#00ff88;animation:blink 2s infinite}
+.uc.offline .bdot{background:#ff4060}
+.uc.checking .bdot{background:#ffb020;animation:blink .6s infinite}
+
+.uc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px}
+.mb{background:rgba(0,0,0,.4);border-radius:4px;padding:4px 6px;text-align:center}
+.mv{
+  font-family:"Share Tech Mono",monospace;font-size:11px;font-weight:600;
+  line-height:1;margin-bottom:1px;
+}
+.uc.online .mv{color:#00ff88}.uc.offline .mv{color:#ff4060}.uc.checking .mv{color:#ffb020}
+.ml{font-size:7px;color:#1a5030;font-weight:600;letter-spacing:.3px}
+
+.latbar{height:2px;background:#0a2015;border-radius:1px;overflow:hidden;margin-bottom:6px}
+.latfill{height:100%;border-radius:1px;transition:width .8s ease}
+.uc.online .latfill{background:#00ff88}
+.uc.offline .latfill{background:#ff4060;width:100%!important}
+.uc.checking .latfill{background:#ffb020;animation:sc 1.2s ease-in-out infinite}
+@keyframes sc{0%{width:4%}60%{width:80%}100%{width:4%}}
+
+.open-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:5px;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);
+  color:#00cc66;padding:4px 10px;border-radius:4px;
+  font-family:"Rajdhani",sans-serif;font-size:10px;font-weight:700;
+  cursor:pointer;text-decoration:none;transition:.2s;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.open-btn:hover{background:rgba(0,255,136,.16);border-color:rgba(0,255,136,.5);color:#00ff88}
+.open-btn.off{background:rgba(255,64,96,.06);border-color:rgba(255,64,96,.2);color:#cc3050}
+.open-btn.off:hover{background:rgba(255,64,96,.15);border-color:rgba(255,64,96,.4);color:#ff4060}
+
+/* ─── CENTER: MAP ─── */
+.center{position:relative;overflow:hidden;background:#040c08}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* Map HUD */
+.map-top{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  padding:8px 12px;
+  background:linear-gradient(180deg,rgba(4,12,8,.9) 0%,transparent 100%);
+  display:flex;align-items:center;justify-content:space-between;
+  pointer-events:none;
+}
+.map-title{
+  font-family:"Share Tech Mono",monospace;
+  font-size:10px;color:#1a6a3a;letter-spacing:1.5px;text-transform:uppercase;
+}
+.map-pills{display:flex;gap:8px}
+.mpill{
+  font-family:"Share Tech Mono",monospace;
+  font-size:9px;font-weight:700;padding:3px 10px;border-radius:3px;
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.mpill.r{background:rgba(255,64,96,.12);color:#ff4060;border:1px solid rgba(255,64,96,.3)}
+.mpill.g{background:rgba(0,255,136,.08);color:#00ff88;border:1px solid rgba(0,255,136,.25)}
+
+/* Bottom ticker */
+.ticker{
+  position:absolute;bottom:0;left:0;right:0;z-index:20;
+  height:30px;background:rgba(4,12,8,.97);
+  border-top:1px solid #143020;
+  display:flex;align-items:center;overflow:hidden;
+}
+.tlbl{
+  flex-shrink:0;padding:0 10px;
+  font-family:"Share Tech Mono",monospace;
+  font-size:8.5px;color:#ff4060;text-transform:uppercase;letter-spacing:1px;
+  border-right:1px solid #143020;height:100%;
+  display:flex;align-items:center;gap:5px;
+}
+.tlbl .rdot{width:5px;height:5px;border-radius:50%;background:#ff4060;animation:blink 1s infinite}
+.ttrack{flex:1;overflow:hidden}
+.tinner{display:flex;white-space:nowrap;will-change:transform}
+.ti{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:0 12px;font-size:9px;color:#2a8a4a;
+  border-right:1px solid #0a2015;flex-shrink:0;
+}
+.tfl{font-size:12px}
+.tip{font-family:"Share Tech Mono",monospace;font-size:8.5px;color:#80d090}
+.ttype{
+  padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;margin-left:2px;
+  font-family:"Share Tech Mono",monospace;letter-spacing:.3px;
+}
+.ttype.c{background:rgba(255,64,96,.15);color:#ff4060;border:1px solid rgba(255,64,96,.3)}
+.ttype.h{background:rgba(255,176,32,.12);color:#ffb020;border:1px solid rgba(255,176,32,.25)}
+.ttype.m{background:rgba(0,200,255,.1);color:#00c8ff;border:1px solid rgba(0,200,255,.25)}
+
+/* ─── RIGHT PANEL: STATS ─── */
+.right{
+  background:rgba(4,12,8,.95);border-left:1px solid #143020;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Attack type stats */
+.stat-types{padding:10px 10px 0}
+.stat-row{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 0;border-bottom:1px solid #0a2015;
+}
+.stat-row:last-child{border-bottom:none}
+.stype{
+  font-family:"Share Tech Mono",monospace;
+  font-size:9.5px;font-weight:700;width:42px;letter-spacing:.5px;
+}
+.sbar-wrap{flex:1;height:4px;background:#0a2015;border-radius:2px;overflow:hidden}
+.sbar{height:100%;border-radius:2px;transition:width 1s ease}
+.scount{
+  font-family:"Share Tech Mono",monospace;
+  font-size:9.5px;min-width:44px;text-align:right;
+}
+
+/* Top attacked countries */
+.countries-hdr{
+  padding:10px 10px 5px;border-top:1px solid #143020;
+  font-family:"Share Tech Mono",monospace;
+  font-size:9px;color:#1a6a3a;letter-spacing:1px;text-transform:uppercase;
+  flex-shrink:0;
+}
+.countries-list{flex:1;overflow-y:auto;padding:0 10px 8px}
+.countries-list::-webkit-scrollbar{width:3px}
+.countries-list::-webkit-scrollbar-thumb{background:#1a4028}
+.crow{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 0;border-bottom:1px solid #0a2015;
+}
+.crank{font-family:"Share Tech Mono",monospace;font-size:8px;color:#1a5030;width:16px}
+.cflag{font-size:13px}
+.cname{flex:1;font-size:10px;font-weight:600;color:#80c090}
+.ccount{font-family:"Share Tech Mono",monospace;font-size:9.5px;color:#ff4060}
+
+/* Legend */
+.leg{
+  padding:8px 10px;border-top:1px solid #143020;flex-shrink:0;
+}
+.legr{display:flex;align-items:center;gap:6px;padding:2px 0;font-size:9px;color:#2a6a3a}
+.legdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hlogo">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACTAJcDASIAAhEBAxEB/8QAHQAAAQQDAQEAAAAAAAAAAAAAAAUGBwgBAwkCBP/EAEIQAAEDAwIEBAMFBQUIAwEAAAECAwQABREGIQcSMUETIlFhCHGBFDJSkaEVI0JisSQzcsHRFhdDU4KSouFjsvHw/8QAGgEAAgMBAQAAAAAAAAAAAAAAAwQAAgUBBv/EADkRAAEDAgMGAwUGBgMAAAAAAAEAAgMEEQUSIRMxQVFhcSKRwQYyUoGxFCMzYqHRFSQ0QuHwJTVy/9oADAMBAAIRAxEAPwC5dFFBqKIrFBNJWptQWzT1uM65v+GgnDaEjK3VfhSnqTVJHtY0ucbALrQXGwSoSKZ+p+ImnLI47HD5ny2h5mYuFcp/mWfKn6moG4w8cVlD0UyPssboIbDvmV7OuJ3J/kT9TUBX3VOpLzdIUGSmTa4kpQDOY5GAdipCOh/U+9ZraiprL/ZgGt+J3oOKI/ZQ/iG55D1VltYfEEtht37PKhW9AzylgB9fy51YRn5A1E1649XCcsJZmXGc4o48MvrUf+1HKn8iaiGXBesuooL9xCLjBdcCmn3ElTb7fNg7HoR3SehFOCW/JhTmnbwiJDdi3FKIUhLSWVORySFBQRglAGDn571eTCogAZnukuL77DyCG2rkOjAG/LVK9+4o3xlxtT9lVDccTzIVIjDmWPUc4Jx9a8K15rOLHbmS7OoRnVJCFKgt4JV90fd2z29aZWrFMIksOszLY+ppRGI0l17m3yCouf0FfXMn2V68uXUXmR/apLTqoyWyAlIIKg4Sd8HpjNGOD0DWAiAG4/0IYrKguI2hUgweM16t5Act0yGG1FCylC0BJB3B5VDGPTFSBpD4jHUyUsu3NxSQOjyg4lXt5glQqHYNxjuR25abpDEdBfddX9sKVocUokc7J2dB2GBSbdIsOHYoUFy3RnZZYBAdhqCnHHDkeG8g4OMgcqvSkmYbRusGNdGehKYNTMNXEOHUK7ej+MtlvHKiUG0qPVbKskfNB8w/WpLtlxg3KMJEGS2+2e6D0+Y7VzcmWudYGXZFtnzUKitILrclvLLxOM+C4Dg79tjsafWhOL+otMXNmJeUyokgDcPZSVA9ME7EY7H86gbW07c8bhMzyd/ldEkLzleMjvMK+gNZFRrwz4qWfVUdtp59tmUds9AT6EH7p/SpJCs9N6epayKqbmjO7eOI7qskTozYrNFGaBTaGiiiiooisGg18V9ucSz2qRc57oajx0Fa1d/kPUnoBVXODQXHcugXNgkzXGqYOl7V9qk/vZDmUxo6ThTqsfokdSewqmXF/ixcLtdn0RJJkzFAgutkhDTfcI/A2O6uquuwr7uP/EWZcrm8yFlM2Wvwg0VjlZb/AIWcnYDcKWe52qL2ItwssWRbr3Z3TDnBSZlyiqD6gc+VQWg45U90Z82d+1ZcERryJpR93fwt5/mPoESWTY/dsOvE8ui0W6PLj3tZkoU5qCGoSWG1qSpiWxy5KW9sZ5fMkjr863Xa72cSokeE3c5Co76ZkR1Mvxi8pWCQ4FDKVdjy+nQ9a+C2SLy+f9nrf9ilqYJbZuCWuZxpsncIWdwk+nUZwKkXSuntMaRsSL7qOUlpBUUpQpP759Q6gJ649h9aLilfHSOAcMzzo1rev0QqWndK24Nm8SU1rbpfWGrVSEyn3hGff8bwVALKD0GOgTgbds05EcN9O2NZXqe5w4yeQFK5EnmUo9wE7dKbmreKNwlpcg6Wj/sC3LWVK8L+9dPqT/D8hUeyHXZDynpDrjzqjlS3FFSj9TXIMJxauF5pNizg1o181ySto6c2jbnPM7lMj1x4SWp1pDUr7WlJPihiFzc222CR61iRqzhW8wtpmNLjuEeVxdvSoA+4qGaKcHsfAbF0zyRxzIH8bk4Mbbsp1jwOEV65Es3G2ocWMYdQWTn9MV6/3XyfsCJFgvcu3JWrnDC3vHZyD5T7H86gggHqKV9P6lvtgeS5abpIjgHPh82Wz7FJ2pOf2WroGk0VSSeT9Qjx4vBJpPEO40TsfsV10s8wnU8JYYZkOPMT0Aux/FWBylwDfAUOavniQWbhbUQLhdU3BtqSX3pLbvlLigeWOytQHmX1PYU+9DcU7PcueDfYjcaRKVh3xDzsvnGO/wB35Havi1notmO5OuOkIyLhbi3zz7MoHlTkffaPZQ67bj5VmQ4nPBUfZ65mzfwcPdP7fROPpo5I9pAc7eXEJlWy83DSlzDtvlSnIrQ/eJW2Q9DPNjkdHTGffB7Yq3XAPjJFvsZm1XV9IdCQG3CrIx2Oe4/UdDVRbXeEvNNWaxxZTkhKkqJcHMJ5OAtMgE7IA6HtisRVS9J3ZEyNMaXE8cpUuPzERHhuWzzb4xtnoobjpWvWURldtofDKN35h1H0ScE+QZXas+nZdM0qCgCMEHuK9VEnw+8Q2NU2JFvlOYmsDAClZPy9/UeoqWknNXo6oVMebcdxHIoskeR1lmiiim0NYJAFV5+JjXqInjQGXkfZrcfNvsuTjO/qG07/AOIgVNutb0jT+mJ12UOdbLf7pH43DshP1JFUG4q3Ry8asj2htTUgNLK3Q9IDaH1BXMscx2BUvPXqAKyq0GplbSjcdXdhw+aMx2yYZTv3Dum5BgNahTKXMdxcnl+IphxJ8dEcAqBZB/vFqPX518abhcrwuFboC34ktKVNS1IBb8VIwkKcxuVcowQfSlvUS7ZFc+2zG5EeYytb64MxCkSXHSAG+RxOxaSOnKQdvenLwut0SyW2ZqzUXjL8JBkOOLSVeIvsnJ75I27k0SsrxSU5kDbu3Mb13fNCgpjLJlvYb3FfTEVaOGGlkTpkLxby+SIcVwjKjj+9V6D/APKiHUV7ueobo5crtKXIfWds7JQPRI7Ctmrb/P1Nf5F4uCyXHVYQjs2j+FA9gKSiQOta2BYKKRpqajxTO1J5dAkMQrzOdnHowbh6ooJAGSaWNPaZvt/Xi12155A+86ocrafmo7VOHCHgkZdwjPv+BcJC1EJfeBENkp3Vy53eUPQbfKnqzGIKc5GeJ/IevJBp6GSbU6DmVBzumNRtwmpi7JP+zvJCm3AySCPpXzt2W8uLCG7TOUo9AGFb/pXRWDwu0szBaafbmSJKU4dlfaVtrdV6kJIA9gBsK9NcMNLIUSsXJ4H+Fc1eP0IrNGJ4j8DfMp00FN8R8lzqvNjvFl8H9rW2TD8YZbLqMc3/AL9qT6vzxK4R2a5wlxbMwy8VM87lqkO58UA48RtR3Qvtnofaqm644T3ezy5Bs6JEtDJ/fQ3Ucspj5p/iHuKPTY2Wu2dYA08D/af2PdBnw7TNDqOXFRuQCN6fvDXiDO09LaiTHluQshKVqOS18/VPt2piOJW26pp1Cm3EnCkKGCD6EV5OPStCvw+mxOAxTAEH/dEpTVMtLJmYbFTZrqwRZUaVrLT0NZiupKLzAbPL4zZ3LreOmOvocZpmQYkS4wJkhX2m/PojoZbSyS2hJIIb8QgfvHEjcnYADqaVeDGsl22WLXMUp1gpIQgjPOjuj39R+VetZ2GTZb1JtlvffZs17jrlwYqXg0lT237pSuhx2Gd9q8NSPqKCodQTHUatdzaOHcL0ErY6iMVDBod45Fa+Eeqp+kdUNsLkJLsVQ5i06FpUgehBweXPbtn0roJpG9R7/YY1zYUkh1A5gDnCu9c2NVzLXFksJgojImxHUH+zthKQ34Y5m1EbKIVkZ9zkmrW/CFrFMmIuwuuqUkpCmSs7kYyn642+lO1VqeoZVNFmyaO78ChU7s8ZiJuW6jtyVkqKxRWnqqXUPfErflW+0Q4Lat0pXMcR+Ll8rQ+q1D8qoLfJS512kyFqSoqWQMDbA2H+tWy+Ly9ttz7i0erDLMdGD1PKpw/Lcp/KqgpzjrvVcAjEtRPOeeUfL/KXxN+VjIx3Tms8hV4etlqU0pEOAS6orcLhJ2z1+6MgeUbU8+Ot3REtto0fBdBZbaTKlFP8aj93P6n8q+T4frYJeoi+4kFtCgTkbYSMn/KmZry5m86zu1y5iUOyVhGT0Sk8o+mBSccDKzHslvDCL/Mor5DDh9+Lz+gS/wAK9EwtVolvTpchpDD7TDbbPKC4tw4GVHpvirIaN+HFiIpt56Ja4e4/eyFGY9j1A2QDUP8AwzONpddDm4Te7cpQPTHipq9DkZxpwuQ1BvKsqaV9xXr/AIT7iizB9VVTNlebNdYC9huCvC1kULHNaLkb00bDwv0zbHEOSUO3NbZBbRIIDLfybThP55pG+I1m4W/h2xf7C8mJK07NZmsoT5EqQDyqRgdiD0+dSVHlIcX4SwWnv+WrqfceopD4nWFzU/D++WFgth+bDW20VglIX1SdvcUeKCOIWY2y657nm7ivp0RqSBq3Stv1BbjliYylzlOxQojdJ+RzSrNksQ4rsqS4G2WkFa1nsAN6rL8NGrZtisz9pkQZby4bqojrGMDxAfLucYGOvypd4+cTUx9Myba6hMOWE4MdLoc8VSk+QpUMZG+TtRLqqcXAC6z9a6i1ZxAlOgQ5UkW+2sZOWmGiTk/PIPzzUkal0xZNRNBF1gIdWn+7fSSh5v3SsbimN8L+mZ+mOEsBm5cv2ic4qaUgEFIXjAVkdcVJkiQ0yB4i/Mr7qQMqV8hXHMDxZwuFASDcKENd8BIt3QTHVCuieX7s1Hgvg+oeQP6iq/cTuDcfS8O4rS/KjToUX7V9lW4h5K0FRGyhuOhq9J8eQoB1ZjoIyG0nzn5kdPp+dQB8UKWY1znBtKW0DTCwrA/+VYH9TWbOx1EwSU7i3UaX01PJHAbPdsgB0OvFUxjPuxn25LKuVxtQWk+4qbbq+zq7hOotqbNytoE6IlQBUUp3WAO4xmoPSPKPlUv/AA8zQuW7bHSClfO3hW+yk5x+YNM+19PlgjrmjxRkH5cUngsmZ7qc7nBNOfqVlFhZbdYtcy4yGSHEIgsBppJzg8yUg+JgjYHykU5/hy1E9ZtWQFpwA294RUT1B8yQfqFfnUYXqIYF6nQVJ5THkONY+SiKVdByhGvgKllJwlxB/mQoEfpmm8QoWS4Y8tN7jMPqEGnqHCrbfsuoUZ1D8dt5s5S4kKB9iKKReHkwT9GWuSlWeZhIPzFFK0splha/mAn5G5XEKo3xdOFV+umSN5rm3+FttI/rVcBtVjvi5bKb/cypO4mO7+xbaUP6VXGnPZq2wk/9O+qz8W/Fb2Cl3gkyy3p+6XNaVFcOM+83hRT5gn269OhqIgSdySSdzUvcFGnpumLvBYdSguxX0qBTnmHL09utRCkYGDtilsBP/JVlzrceSLiP9LBysVI/AmeWrndYBXyh2OmSk9wtpQVn8qtzrviXqJvVEiyaRGnWmoFkbvM6feHlpb5HCeVCAnqcJ6+9UZ0Pd/2Fqu33JQyyh3kfT+JtXlUPyNXj4c6b0XrnSsJrUljt94nWEqhoW+nmV4B8zXN+JJSRgHIyDir1UZhr3jg8AjuND6IlK/PTD8psn1w9vh1noGy6jl25UFdwipfLCju2T3SeuO4PoRS1zSIuAvmkMj+IDzp+Y7/MVFAmP8D3zHuC5Uzhw8SY0jBddsrhyfCX3Uyo/dP8JOOlSbpTUFr1Tp6JfbNJEiDLQFtLxg49COxq6uol4kcJrfqPXcfUGlpi7fdZKwua4FFLQTjPigAbrzjvTC0BwtuM/ia1cOIlrnOx2XnOV2QsBLziDspQP3kHHarMSClT+bfgPnYubeGT6K/F07b16ZTh5JuWFP8A8BI/d/8AT6fXeu2Uut6XHnglMVHhM8uzih27cqf9aQ9c6p07w/049f8AUE5qO0CGkLecAW+4eiAT/wDgGTTnzgUxda6I05xAvMU32zsT4duOC5IBWFKyDyNpJwNx5l4yccoOM1wriWOH11i6g0+1f4shctE4c4keGpCFjsGwoA+GOgPfr3qu/wAX91bS9fwhWFpixbaPcqUXFAf91WglSIlqtjshwNsRIbJWoJASlCEJzgDsABVAviG1JIut4biPOlb0h1dxlcwwUqc/u0Y7cqABS00e3ligHFwJ7DX9lfPs4nvPK3moqp8cGSF6tbYUtxCVKbVlCik7KA6/WmPT34LtOuaxaUylKlJUgYJwD5gev0rU9pbfwua/JZuFX+1stzXw8W2gzxM1AhIwPtZOPmBSHZci5IIOMJWf/E0ucXHA7xMv6xv/AGsj8kikOzb3FG2fIv8A+pq1J/1LM3wD6Kkv9YbfF6ro/wABnS7wytij2SaK88BW1N8MLYkjflorBwsH7JH2W1UX2rlB3xeWRK7hcnj5fFQzJRj1KFNn9Uj8xUDaZ0gxP0XeZzUyNIy02pD2eURilWSF5+7kZH0q4PxNWFU+1xJrSMlxtyItR6JV/eNE/wDUnH1qjT9yu9jmybfHkuR2ApQWwD5HEqH8Q6K223oVHFUyPmpoH5SHB3cFcnfCzJLK3MLW+ae/Ai5CBqByI3/akKdCCU+XIWOUnftsKYes7abPq2620g4YlLCdseUnI/Qit+g7mq2anjPJVyJcPId+mTkfrinnx4hsXCTD1bb0LLT6UxZhCCAl5I2377bZ9qYiLsPx8h3uzN39QlngVOH3bvYf0Ki5W4welWb+FfiGmC/Hbmu+VtKIFw5jj9yT+5e9+VR5T7Gqy0p6VvcjT96auLCfETgofZPR5o7KQfmK9FilI6eMPj95uo9R81nUU4hfZ3uneund4RBmQpFtnRUTWZDSm3YykhQcQdiCOmPnWi12liFbY9vjx2YdvjthtiHHHKhCQNgSOtR98P2ubdqDTsa2oeQXUM80RwnzSGRthX86OhHpg1Ko3FZEUrZWhwWs5uU2TWu85pjUbapGERbeApKQnqShfMR+aR9acqfDkR0nl5kOJBwodiKY2r2LdBuS0yZHhLkOiU2OvPjAUk+gyNtvnStp+9ufb0W19kBhTfMxISfKcnZJ/p9KuqpcU0+wghol1rGPDJ8w+R/yNbIjrCm+RjCQ3gFGMFHsR2rf2pva5vUDT1mXc5J/tP3IqEq5VvOdkj27nPQZrj3tY3M7cF0Ak2Cjz4lNZwrTY3LG6sFkNiVccH/hg/u2fXmcUBt6A+tUTvdylXi7yrpMVzPyXCtXt6D5AbU9eM+tJGpb6/FEoyGw+p2W+Okl/oSP5EjypHoKj6ncJpiSap41du6D/Kz6+cG0Tdw390VK3w9xkpvX2x1pwpypfME5SAhPc9tzUVtNrdcS02kqWshKR6k1NbLzWjuDM2W04n7VPT9ijkHfJyFkf+RrM9rpy6nZRs1dKQPkmMFjtI6d25gumNbLFK1Xq2bcJKVJgyn33PtAOUhZ5igE9t8Un6XtMhq/+BOYW06lISG1DzcylBIyO22a1aL1VP0pKclW5tp1xY5VIfypvHfy/ixtntT84I2l7Uuvo8hKFKEuX45S4rnWAnYZPpzE4/w1WvfWUUMofbZ5QG877kSnbTTuYW3z3ueyvVw3hC36JtcYJxysAn5milyGwmNFajo2S2gIH0FFSki2UDGHgAjSvzPJSRruy/t/Ss22JIS8tHOwo/wup8yT+YFc9+NdhNvvv25pvkbe3KOX7hJOU574VzD8q6Smq3fE1w+RJ8aTGYSY84qcbwNkSMedHtzgZH8w96UqJDRVLKxu4aO7Hj8lfZioidDx3juqg2awzLlDuclsKaMCN9owUkFYCgCB775+lS1w9udv1bomXpq9ueEl1GCtW3huD7qxn16/PNM7TerjpmLKst2YXMK0qbae5QTHSeitx5xt909N+9NSz3yZa75+0Q79oJVh1JOzic/p6j0ouI0dXi7XktylhDo3Dig081PRZbG+bRwWi/2mZY7w/a56Ch5k4zjZaeyh7Eb18NTvqSHZOJWlI85mU0xeWQERniP70/8AKWB3z+XXpUJXa2zrRcXbfcozkaU0cLbWNx7j1HvWrgONtr49nKMsrdHA9OI6JHEKA0zs7NWHcU5uF+uJmj7u2oPPphKcDii0fOwsdHEe/qO42q+fCvX8DWNsaSX2BcQ0FkNq8khH/Mb9vVPVJrm5Tv4b68uOkJ7XI48uCHPECW18rjC/xtnsfUdD3otfQPa41FONTvHPqOv1UpKsW2cm7geS6AashRJ85+DPb8ZuRCwnI2aSFYUrbp94b1HNw/bdovjEKNGQuzITh+GGlLdcdTgNrZUT97vv13pf4VcWrTqe3xm7jLjh93DbUxOEtSFfhUP+G5/Kdj2p7aqu9k03CRcrmlvxEAoitpQC84r8DY6/5DvWcyoje0vB0G/p3WiWEGy+i63qHY9P/tO7PeGhDac7edxZGyUp7qJ7VS74iuLM6+3V+3RHvDd5S0sNrymK0erSSOqz/Er6CtnHzjPcL1cnYVvkpDyQUZZXzNQx0KUficPdf0FQN1JOdycmj0dG6tcJZBaMbhz6nolaqpEIyMPi4nksDAGBRQaceidLS9RXNhhKClpxXlBOC5jqB7eprcrKyGiiMspsAsyCB87wxg1KWuD+lXb3fGn1pw2jzJJ7J7q/yHvShxImq1rrNvTtgCU2+2MupYwPK4tCSpahj15cClbiNf7bo60L0pp0tquzrXhTpbf/AAUd20n1/pTR4cavi6efJu7S5UYbNpaQPFQcYyF/hAPTvXh4G1tZI7F8l+EbenNegd9niAoi6w/uPXkmcwy4882y2k87igkA9jVxfg80alvxL84g+E2kIYJTgkDYH67mq/aF07K1ZrPljpbWmQ8Qz4LXKlLROCoDsSPKO/WugOhNPx9N6bi2thCUltIK+UdVY/8A4U3iFU7EKiOC1gyznd+AQqWBtOxzwb30Hbml6isiinlEUm6jtEO+WiRbJqOZp5OMjqhXZQ9CDvSlWCKq9jXtLXDQroJBuFRb4g+GU633CRIDIElnzOKSnCVpJ2cH8p7/AIVexqAlpU2tSFpKVp2IIwRXUbW2mIWprZ9lkAIfQCWHuXJQSMYI7pPQiqXcaeD8613B92LFLTqN1NpGU8v4k/iR+qe+1K4diDsLcKaoP3Z913LofRUq6QVQ2sfvcR6hRFpLUdw03cUyoa+ZskeIyo7K9/Y+9TWmfpPifZW2JkdTs5GEhbZCJEfPUnPVP5ioAlMPRXizIaU2sb4Pceo9RRFkSIkhEiK+4w8g5Q42opUPqKfxf2ehxBwqYHZJRucPVK0eJPpgYpBmYd4KfOtOFeobEtx+Cn9rQE7h1kfvAP5kf6ZphuJU24W3UKbWNilQwRUl6d4vXNmGu36ii/tKM4nkLzKvCeA+fQ/pTwOo+FerGENTnm4jpAHLNYwQR/OP9ayo8ZxnDRkr4DIB/czl2TbqKhqvFTyZTyKhjTOobpp2YZFteASvZ5hwczTo9FJ7/PrTv1pxTut9tjMKKJMUlrw3nXZBcWhPdton7qP1pzI4e6HnMhaL5a2XST5WZ4Axnbqa1/7q9LNnmc1LC5f5pyRVJvaDB5ZRLLG7MPynXvzVmYfWxsyMeLd1DGwr6rfb509wNw4zjpPcDYfM9Kl2Jpfh1aVOPXW/WlIbWeQNu+MpQ7HG+/tivMviJoaxOH/Z2zybm8lHKlb4DbQPrj/1Tj/aeoqPBQ0znHmRYIIwqKLxVEoHbUpG0bwzkyJTL14QpDBBWXFDDKAnc8x7/wBKUtaa+s9ihqseiUNuyRlDtzKR5OxDf+vQUydY671LqrLVwm+FDzlMSOORofMfxfWmv0FdpsAqa2UVGKvzEbmD3R35rkuIxQsMVILDmd6ypSlrU44pS1qJUpSjkknqTSppyzv3ea2020txBWE8qerivwj/ADPYVs03p6beJbLTbDqkuEciUDzOfL0H8x2+dXI+HvgszZmGb5fY6C/yjwWeXZI64Ht79TT+KYsIf5am1kPkOpS9HRGQ7WXRv1S58OHDJGmbSi83FpJnPpBSOXHKMbY9ABsKmoCvKEhIAAwAMACvYrOo6UU7LXuTqTzK0pJM56IoooptDRRRRUUQRvSVqOx2++wjFuDIWBuhwbLbPqk9jSrWCKHLEyVpY8XBXWuLTcKrXF/gOl0PSo7KVt7qD7KMDPqpI3Sf5ht6iq1ao0DfbI/ymMtxCjhOOpPoD0V9N/aunJGRjFNbUug9P3tKy7ESy4seZTaRhXzT0NZ0TK7Dj/KOzM+F3oUSVkFT+KLHmPULmI4lbayhxCkKHVKhg15PuKuzrP4dWJRccgIYdRg4QAAD/wBKuh+RqHdQ/D5fIPN4cF477cpUnb6hQP5itSL2ohHhqY3MPUXHmkH4RJvicHKKXbdbv2Rb0NRGFXCWyD5nnEuFSllKSE/dI/KlaZpKJCvtqYfhSBFfcVGdS4skrdSnIWCnB5VensaWX+FOqIrrbyP2g26wAGiUJUUD0GD71pjcNNWMEoaempC1pcPhtH7yc4PXZQyfzrPdiNM7VtQOP6/smW00g0dEeCY2oGorctAiMx2keHghlLgTzDrkubk/pSd0qXGOEWrbq+j7THukvB2L7gSB8scxp+6R+Gy+vu+JKjMxkkfeWnmKflzd/fFPxe0VJFEGNJe4cgSlnYXM95cfCOqrhCt02YCWGFcgICnFeVIz03NSXw34RXrUcxrwobjoV1ccbIQPknqrHqcD2q1eiuAWnbOpD9yUZj6cdd9/men0FS1arXAtcYR4EVthsdkjc/M96Vmr8RrvCwbJvm5MxUdPBqTmP6KN+E/B2zaSZRKmNolTyAVFW+D7+vy6VKiRgYAxWQMCs1amo46YWZvO8nee6JJI551RRRRTSoiiiiooiiiiooiiiioog9KxRRXOKizXkgHqM0UVwgHeotS2GVjC2W1D3SDXkRIoIIjMg+yBRRQHRR390eSsHHmtoQhP3UJHyFe+9FFHa0N3BcOqzRRRVlUIoooqLqKKKKiiKKKKii//2Q==" alt="Escudo FAE"/>
+    <div class="htitles">
+      <h1>Jefatura de Ciberdefensa</h1>
+      <p>Monitoreo de Páginas FAE · Fuerza Aérea Ecuatoriana</p>
+    </div>
+  </div>
+  <div class="hclock">
+    <div class="t" id="clk">--:--:--</div>
+    <div class="s">Quito · UTC−5</div>
+  </div>
+  <div class="hright">
+    <button class="btnv" id="btnv" onclick="startCheck()">
+      <span id="bico">↻</span> Verificar
+    </button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- LEFT: ENDPOINTS -->
+  <div class="left">
+    <div class="ep-stats">
+      <div class="ep-stat"><div class="n g" id="s-on">—</div><div class="l">En línea</div></div>
+      <div class="ep-stat"><div class="n r" id="s-off">—</div><div class="l">Fuera</div></div>
+      <div class="ep-stat"><div class="n a" id="s-avg">—</div><div class="l">Latencia</div></div>
+    </div>
+    <div class="panel-hdr">
+      <span>Endpoints FAE</span>
+      <div class="dot"></div>
+    </div>
+    <div class="ep-scroll" id="ugrid"></div>
+  </div>
+
+  <!-- CENTER: MAP -->
+  <div class="center">
+    <canvas id="cv"></canvas>
+    <div class="map-top">
+      <div class="map-title">▶ Mapa de Amenazas Globales — Tiempo Real</div>
+      <div class="map-pills">
+        <div class="mpill r" id="atk-pill">0 ataques</div>
+        <div class="mpill g" id="blk-pill">0 bloqueados</div>
+      </div>
+    </div>
+    <div class="ticker">
+      <div class="tlbl"><div class="rdot"></div>En Vivo</div>
+      <div class="ttrack"><div class="tinner" id="tinner"></div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: STATS -->
+  <div class="right">
+    <div class="panel-hdr">
+      <span>Tipos de Ataque</span><div class="dot"></div>
+    </div>
+    <div class="stat-types" id="atktypes"></div>
+
+    <div class="countries-hdr">▶ Países más atacados</div>
+    <div class="countries-list" id="clist"></div>
+
+    <div class="leg">
+      <div class="legr"><div class="legdot" style="background:#ff4060;box-shadow:0 0 5px #ff4060"></div>Crítico — DDoS / Ransomware</div>
+      <div class="legr"><div class="legdot" style="background:#ffb020;box-shadow:0 0 5px #ffb020"></div>Alto — APT / Exploit</div>
+      <div class="legr"><div class="legdot" style="background:#00c8ff;box-shadow:0 0 5px #00c8ff"></div>Medio — Scan / Phishing</div>
+      <div class="legr"><div class="legdot" style="background:#00ff88;box-shadow:0 0 6px #00ff88"></div>Base FAE — Quito</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+// ════════════════════════════════════════════════
+// ENDPOINTS FAE
+// ════════════════════════════════════════════════
+const TARGETS = [
+  {id:'sistemas', name:'Sistemas FAE',    icon:'🖥️', url:'https://sistemas.fae.mil.ec/'},
+  {id:'chasqui',  name:'Chasqui FFAA',   icon:'📡', url:'https://chasqui.ffaa.mil.ec/'},
+  {id:'consultas',name:'Consultas Web',  icon:'🔍', url:'https://sistemas.fae.mil.ec/consultas-web/pages/inicio.jsf'},
+  {id:'correo',   name:'Correo FAE',     icon:'✉️', url:'https://correo.fae.mil.ec/static/login/'},
+  {id:'storage',  name:'Almacenamiento', icon:'💾', url:'https://almacenamiento.fae.mil.ec/index.php/login'},
+  {id:'portal',   name:'Portal FAE',     icon:'🌐', url:'https://portal.fae.mil.ec/faeweb/'},
+];
+let statuses={}, hist={};
+TARGETS.forEach(t=>{ statuses[t.id]={state:'checking'}; hist[t.id]=[]; });
+
+// Clock
+setInterval(()=>{
+  const d=new Date();
+  document.getElementById('clk').textContent=
+    [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+},1000);
+
+async function probe(url){
+  const t0=performance.now();
+  try{
+    const c=new AbortController(), id=setTimeout(()=>c.abort(),7000);
+    await fetch(url,{method:'HEAD',mode:'no-cors',signal:c.signal,cache:'no-cache'});
+    clearTimeout(id); return{ok:true,ms:Math.round(performance.now()-t0)};
+  }catch{
+    try{
+      await new Promise((res,rej)=>{
+        const img=new Image(),id=setTimeout(()=>rej(),5000);
+        img.onload=img.onerror=()=>{clearTimeout(id);res();};
+        img.src=url+'?_t='+Date.now();
+      });
+      return{ok:true,ms:Math.round(performance.now()-t0)};
+    }catch{return{ok:false,ms:0};}
+  }
+}
+
+async function startCheck(){
+  const btn=document.getElementById('btnv'), ico=document.getElementById('bico');
+  btn.disabled=true; ico.classList.add('spin');
+  TARGETS.forEach(t=>{statuses[t.id]={state:'checking'};});
+  renderCards();
+  const res=await Promise.allSettled(TARGETS.map(t=>probe(t.url)));
+  let on=0,off=0,tot=0,cnt=0;
+  res.forEach((r,i)=>{
+    const t=TARGETS[i];
+    if(r.status==='fulfilled'&&r.value.ok){
+      statuses[t.id]={state:'online',ms:r.value.ms};
+      hist[t.id].push({ok:true,ms:r.value.ms});
+      on++;tot+=r.value.ms;cnt++;
+    }else{
+      statuses[t.id]={state:'offline',ms:0};
+      hist[t.id].push({ok:false,ms:0});
+      off++;
+    }
+    if(hist[t.id].length>40)hist[t.id].shift();
+  });
+  document.getElementById('s-on').textContent=on;
+  document.getElementById('s-off').textContent=off;
+  document.getElementById('s-avg').textContent=cnt?Math.round(tot/cnt)+'ms':'—';
+  renderCards();
+  btn.disabled=false; ico.classList.remove('spin');
+}
+
+function renderCards(){
+  const g=document.getElementById('ugrid'); g.innerHTML='';
+  TARGETS.forEach(t=>{
+    const st=statuses[t.id]||{state:'checking'};
+    const h=hist[t.id]||[];
+    const upt=h.length?Math.round((h.filter(x=>x.ok).length/h.length)*100)+'%':'—';
+    const ms=st.ms||0;
+    const msD=st.state==='checking'?'…':st.state==='offline'?'—':ms+'ms';
+    const lbl=st.state==='online'?'En línea':st.state==='offline'?'Fuera':'Verificando';
+    const bw=st.state==='online'?Math.min(100,Math.max(5,(ms/3000)*100)):st.state==='offline'?100:40;
+    const short=t.url.replace('https://','').replace(/\/$/,'').slice(0,36);
+    const openCls='open-btn'+(st.state==='offline'?' off':'');
+    const openTxt=st.state==='offline'?'⚠ Abrir igualmente':'↗ Abrir sitio';
+    const c=document.createElement('div');
+    c.className=`uc ${st.state}`;
+    c.innerHTML=`
+      <div class="uc-row1">
+        <div class="uc-ico">${t.icon}</div>
+        <div class="uc-info">
+          <div class="uc-name">${t.name}</div>
+          <div class="uc-url">${short}</div>
+        </div>
+        <div class="uc-badge"><span class="bdot"></span>${lbl}</div>
+      </div>
+      <div class="uc-metrics">
+        <div class="mb"><div class="mv">${msD}</div><div class="ml">Latencia</div></div>
+        <div class="mb"><div class="mv">${upt}</div><div class="ml">Uptime</div></div>
+        <div class="mb"><div class="mv">${h.length}</div><div class="ml">Checks</div></div>
+      </div>
+      <div class="latbar"><div class="latfill" style="width:${bw}%"></div></div>
+      <a href="${t.url}" target="_blank" rel="noopener" class="${openCls}">${openTxt}</a>
+    `;
+    g.appendChild(c);
+  });
+}
+
+// ════════════════════════════════════════════════
+// ATTACK DATA — Worldwide sources + multi-target
+// ════════════════════════════════════════════════
+
+// Attack types with colors (Norse/Fortinet style)
+const ATK_TYPES = [
+  {id:'OAS', label:'OAS', color:'#ff4060', desc:'Ataques de Objetos'},
+  {id:'ODS', label:'ODS', color:'#ff8040', desc:'Denegación de Servicio'},
+  {id:'MAV', label:'MAV', color:'#ff40c0', desc:'Malware/Virus'},
+  {id:'WAV', label:'WAV', color:'#8040ff', desc:'Ataques Web'},
+  {id:'IDS', label:'IDS', color:'#4080ff', desc:'Intrusión'},
+  {id:'VUL', label:'VUL', color:'#40c0ff', desc:'Vulnerabilidades'},
+  {id:'KAS', label:'KAS', color:'#40ff80', desc:'Kaspersky Detected'},
+  {id:'UNK', label:'UNK', color:'#a0a0a0', desc:'Desconocido'},
+];
+let atkTypeCounts = {};
+ATK_TYPES.forEach(a=>{atkTypeCounts[a.id]=Math.floor(Math.random()*500)+100;});
+
+// Source cities (attackers)
+const SOURCES = [
+  {c:'Moscú',       f:'🇷🇺',cc:'Rusia',        lat:55.75,lon:37.62,  w:5},
+  {c:'Beijing',     f:'🇨🇳',cc:'China',         lat:39.91,lon:116.39, w:5},
+  {c:'Shanghái',    f:'🇨🇳',cc:'China',         lat:31.23,lon:121.47, w:4},
+  {c:'Pyongyang',   f:'🇰🇵',cc:'Corea N.',      lat:39.03,lon:125.75, w:4},
+  {c:'Teherán',     f:'🇮🇷',cc:'Irán',          lat:35.69,lon:51.39,  w:4},
+  {c:'S.Petersburgo',f:'🇷🇺',cc:'Rusia',        lat:59.93,lon:30.32,  w:3},
+  {c:'Nueva York',  f:'🇺🇸',cc:'EE.UU.',        lat:40.71,lon:-74.01, w:3},
+  {c:'Los Ángeles', f:'🇺🇸',cc:'EE.UU.',        lat:34.05,lon:-118.24,w:3},
+  {c:'São Paulo',   f:'🇧🇷',cc:'Brasil',        lat:-23.55,lon:-46.63,w:3},
+  {c:'Lagos',       f:'🇳🇬',cc:'Nigeria',       lat:6.45,lon:3.39,   w:3},
+  {c:'Bombay',      f:'🇮🇳',cc:'India',         lat:19.08,lon:72.88,  w:3},
+  {c:'Delhi',       f:'🇮🇳',cc:'India',         lat:28.61,lon:77.21,  w:3},
+  {c:'Ámsterdam',   f:'🇳🇱',cc:'Países Bajos',  lat:52.37,lon:4.90,   w:3},
+  {c:'Frankfurt',   f:'🇩🇪',cc:'Alemania',      lat:50.11,lon:8.68,   w:3},
+  {c:'Varsovia',    f:'🇵🇱',cc:'Polonia',       lat:52.23,lon:21.01,  w:3},
+  {c:'Bucarest',    f:'🇷🇴',cc:'Rumania',       lat:44.43,lon:26.10,  w:3},
+  {c:'Kyiv',        f:'🇺🇦',cc:'Ucrania',       lat:50.45,lon:30.52,  w:3},
+  {c:'Estambul',    f:'🇹🇷',cc:'Turquía',       lat:41.01,lon:28.96,  w:2},
+  {c:'Tokio',       f:'🇯🇵',cc:'Japón',         lat:35.69,lon:139.69, w:2},
+  {c:'Seúl',        f:'🇰🇷',cc:'Corea S.',      lat:37.57,lon:126.98, w:2},
+  {c:'Singapur',    f:'🇸🇬',cc:'Singapur',      lat:1.35,lon:103.82,  w:2},
+  {c:'Yakarta',     f:'🇮🇩',cc:'Indonesia',     lat:-6.21,lon:106.85, w:2},
+  {c:'El Cairo',    f:'🇪🇬',cc:'Egipto',        lat:30.06,lon:31.25,  w:2},
+  {c:'Johannesburgo',f:'🇿🇦',cc:'Sudáfrica',   lat:-26.20,lon:28.04, w:2},
+  {c:'Nairobi',     f:'🇰🇪',cc:'Kenia',         lat:-1.29,lon:36.82,  w:2},
+  {c:'Bogotá',      f:'🇨🇴',cc:'Colombia',      lat:4.71,lon:-74.07,  w:2},
+  {c:'Caracas',     f:'🇻🇪',cc:'Venezuela',     lat:10.49,lon:-66.88, w:2},
+  {c:'México DF',   f:'🇲🇽',cc:'México',        lat:19.43,lon:-99.13, w:2},
+  {c:'Buenos Aires',f:'🇦🇷',cc:'Argentina',     lat:-34.60,lon:-58.38,w:2},
+  {c:'Santiago',    f:'🇨🇱',cc:'Chile',         lat:-33.45,lon:-70.67,w:2},
+  {c:'Madrid',      f:'🇪🇸',cc:'España',        lat:40.42,lon:-3.70,  w:2},
+  {c:'Londres',     f:'🇬🇧',cc:'R. Unido',      lat:51.51,lon:-0.13,  w:2},
+  {c:'París',       f:'🇫🇷',cc:'Francia',       lat:48.85,lon:2.35,   w:2},
+  {c:'Minsk',       f:'🇧🇾',cc:'Bielorrusia',   lat:53.90,lon:27.57,  w:2},
+  {c:'Karachi',     f:'🇵🇰',cc:'Pakistán',      lat:24.86,lon:67.01,  w:2},
+  {c:'Hanói',       f:'🇻🇳',cc:'Vietnam',       lat:21.03,lon:105.85, w:2},
+  {c:'Hong Kong',   f:'🇭🇰',cc:'Hong Kong',     lat:22.32,lon:114.17, w:2},
+  {c:'Sídney',      f:'🇦🇺',cc:'Australia',     lat:-33.87,lon:151.21,w:2},
+  {c:'Toronto',     f:'🇨🇦',cc:'Canadá',        lat:43.65,lon:-79.38, w:2},
+  {c:'Chicago',     f:'🇺🇸',cc:'EE.UU.',        lat:41.88,lon:-87.63, w:2},
+  {c:'Río de Janeiro',f:'🇧🇷',cc:'Brasil',      lat:-22.91,lon:-43.17,w:2},
+  {c:'Bagdad',      f:'🇮🇶',cc:'Iraq',          lat:33.33,lon:44.44,  w:2},
+  {c:'Riyadh',      f:'🇸🇦',cc:'Arabia S.',     lat:24.69,lon:46.72,  w:2},
+  {c:'Bangkok',     f:'🇹🇭',cc:'Tailandia',     lat:13.75,lon:100.52, w:2},
+  {c:'Manila',      f:'🇵🇭',cc:'Filipinas',     lat:14.60,lon:120.98, w:2},
+  {c:'Lima',        f:'🇵🇪',cc:'Perú',          lat:-12.04,lon:-77.03,w:2},
+  {c:'Argel',       f:'🇩🇿',cc:'Argelia',       lat:36.74,lon:3.06,   w:2},
+  {c:'Casablanca',  f:'🇲🇦',cc:'Marruecos',     lat:33.59,lon:-7.62,  w:2},
+  {c:'Belgrado',    f:'🇷🇸',cc:'Serbia',        lat:44.80,lon:20.46,  w:2},
+];
+
+// Target cities (GLOBAL — not just Quito)
+const TARGETS_MAP = [
+  {c:'Quito',        lat:-0.22, lon:-78.51, home:true, cc:'Ecuador', f:'🇪🇨'},
+  {c:'Moscú',        lat:55.75, lon:37.62,  cc:'Rusia',        f:'🇷🇺'},
+  {c:'Washington',   lat:38.90, lon:-77.04, cc:'EE.UU.',       f:'🇺🇸'},
+  {c:'Beijing',      lat:39.91, lon:116.39, cc:'China',        f:'🇨🇳'},
+  {c:'Berlín',       lat:52.52, lon:13.40,  cc:'Alemania',     f:'🇩🇪'},
+  {c:'Kiev',         lat:50.45, lon:30.52,  cc:'Ucrania',      f:'🇺🇦'},
+  {c:'Tel Aviv',     lat:32.08, lon:34.78,  cc:'Israel',       f:'🇮🇱'},
+  {c:'Seúl',         lat:37.57, lon:126.98, cc:'Corea S.',     f:'🇰🇷'},
+  {c:'Tokio',        lat:35.69, lon:139.69, cc:'Japón',        f:'🇯🇵'},
+  {c:'Taipei',       lat:25.05, lon:121.56, cc:'Taiwán',       f:'🇹🇼'},
+  {c:'Londres',      lat:51.51, lon:-0.13,  cc:'R. Unido',     f:'🇬🇧'},
+  {c:'París',        lat:48.85, lon:2.35,   cc:'Francia',      f:'🇫🇷'},
+  {c:'Brasilia',     lat:-15.78,lon:-47.93, cc:'Brasil',       f:'🇧🇷'},
+  {c:'Buenos Aires', lat:-34.60,lon:-58.38, cc:'Argentina',    f:'🇦🇷'},
+  {c:'Bogotá',       lat:4.71,  lon:-74.07, cc:'Colombia',     f:'🇨🇴'},
+  {c:'Lima',         lat:-12.04,lon:-77.03, cc:'Perú',         f:'🇵🇪'},
+  {c:'Ciudad México',lat:19.43, lon:-99.13, cc:'México',       f:'🇲🇽'},
+  {c:'Mumbai',       lat:19.08, lon:72.88,  cc:'India',        f:'🇮🇳'},
+  {c:'Singapur',     lat:1.35,  lon:103.82, cc:'Singapur',     f:'🇸🇬'},
+  {c:'Yakarta',      lat:-6.21, lon:106.85, cc:'Indonesia',    f:'🇮🇩'},
+  {c:'Estambul',     lat:41.01, lon:28.96,  cc:'Turquía',      f:'🇹🇷'},
+  {c:'El Cairo',     lat:30.06, lon:31.25,  cc:'Egipto',       f:'🇪🇬'},
+  {c:'Lagos',        lat:6.45,  lon:3.39,   cc:'Nigeria',      f:'🇳🇬'},
+  {c:'Nairobi',      lat:-1.29, lon:36.82,  cc:'Kenia',        f:'🇰🇪'},
+  {c:'Johannesburgo',lat:-26.20,lon:28.04,  cc:'Sudáfrica',    f:'🇿🇦'},
+  {c:'Riyadh',       lat:24.69, lon:46.72,  cc:'Arabia S.',    f:'🇸🇦'},
+  {c:'Varsovia',     lat:52.23, lon:21.01,  cc:'Polonia',      f:'🇵🇱'},
+  {c:'Madrid',       lat:40.42, lon:-3.70,  cc:'España',       f:'🇪🇸'},
+  {c:'Roma',         lat:41.90, lon:12.48,  cc:'Italia',       f:'🇮🇹'},
+  {c:'Sydney',       lat:-33.87,lon:151.21, cc:'Australia',    f:'🇦🇺'},
+];
+
+// Track country attack counts
+const countryHits = {};
+TARGETS_MAP.forEach(t=>{ countryHits[t.cc] = Math.floor(Math.random()*2000)+50; });
+
+// ════════════════════════════════════════════════
+// CANVAS MAP ENGINE
+// ════════════════════════════════════════════════
+const canvas = document.getElementById('cv');
+const ctx = canvas.getContext('2d');
+let W=0, H=0, proj=null;
+let worldGeo=null, staticFrame=null;
+let arcs=[], impacts=[];
+let atkTotal=0, blkTotal=0;
+
+// Colors — Norse-style multicolor
+const ARC_COLORS = [
+  '#ff4060','#ff6040','#ff40a0','#c040ff','#6040ff',
+  '#4080ff','#40c0ff','#40ffc0','#a0ff40','#ffff40',
+  '#ff8020','#ff20c0','#20c0ff','#20ffb0',
+];
+
+function makeProj(w,h){
+  return d3.geoNaturalEarth1().scale(w/6.0).translate([w/2,h/2]);
+}
+
+function bakeWorld(){
+  staticFrame = document.createElement('canvas');
+  staticFrame.width=W; staticFrame.height=H;
+  const sc = staticFrame.getContext('2d');
+
+  // Deep dark ocean
+  const og=sc.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.8);
+  og.addColorStop(0,'#081408'); og.addColorStop(1,'#020802');
+  sc.fillStyle=og; sc.fillRect(0,0,W,H);
+
+  const pm=d3.geoPath().projection(proj).context(sc);
+  sc.beginPath(); pm({type:'Sphere'});
+  sc.strokeStyle='rgba(0,255,136,0.15)'; sc.lineWidth=0.8; sc.stroke();
+
+  const grat=d3.geoGraticule()();
+  sc.beginPath(); pm(grat);
+  sc.strokeStyle='rgba(0,255,100,0.04)'; sc.lineWidth=0.3; sc.stroke();
+
+  if(worldGeo){
+    // Country fills — Norse dark style
+    worldGeo.features.forEach(f=>{
+      sc.beginPath(); pm(f);
+      sc.fillStyle='#0e1e0e'; sc.fill();
+    });
+    // Borders with green tint
+    sc.beginPath(); pm(worldGeo.mesh);
+    sc.strokeStyle='rgba(0,180,80,0.35)'; sc.lineWidth=0.5; sc.stroke();
+    // Coast glow
+    worldGeo.features.forEach(f=>{
+      sc.beginPath(); pm(f);
+      sc.strokeStyle='rgba(0,255,100,0.06)'; sc.lineWidth=1.2; sc.stroke();
+    });
+  }
+
+  // City node dots
+  SOURCES.forEach(s=>{
+    const p=proj([s.lon,s.lat]); if(!p)return;
+    sc.beginPath(); sc.arc(p[0],p[1],1.8,0,Math.PI*2);
+    sc.fillStyle='rgba(0,255,136,0.6)'; sc.fill();
+  });
+  TARGETS_MAP.forEach(t=>{
+    const p=proj([t.lon,t.lat]); if(!p)return;
+    if(!t.home){
+      sc.beginPath(); sc.arc(p[0],p[1],2.2,0,Math.PI*2);
+      sc.fillStyle='rgba(80,200,255,0.5)'; sc.fill();
+    }
+  });
+
+  // Country labels
+  const LBLS=[
+    {n:'Rusia',lat:62,lon:90},{n:'Canadá',lat:60,lon:-98},{n:'EE.UU.',lat:39,lon:-98},
+    {n:'Brasil',lat:-12,lon:-53},{n:'China',lat:36,lon:104},{n:'Australia',lat:-27,lon:133},
+    {n:'India',lat:22,lon:79},{n:'Argentina',lat:-35,lon:-65},{n:'México',lat:24,lon:-102},
+    {n:'Argelia',lat:28,lon:2},{n:'Arabia S.',lat:24,lon:46},{n:'Kazajistán',lat:48,lon:68},
+    {n:'Congo',lat:-4,lon:24},{n:'Indonesia',lat:-4,lon:118},{n:'Perú',lat:-10,lon:-75},
+    {n:'Colombia',lat:4,lon:-73},{n:'Chile',lat:-30,lon:-71},{n:'Venezuela',lat:8,lon:-66},
+    {n:'Sudáfrica',lat:-29,lon:25},{n:'Egipto',lat:26,lon:30},{n:'Nigeria',lat:9,lon:8},
+    {n:'Irán',lat:32,lon:53},{n:'Turquía',lat:39,lon:35},{n:'Francia',lat:47,lon:2},
+    {n:'Alemania',lat:51,lon:10},{n:'España',lat:40,lon:-4},{n:'Ucrania',lat:49,lon:32},
+    {n:'Japón',lat:37,lon:137},{n:'Filipinas',lat:12,lon:122},{n:'Pakistán',lat:30,lon:69},
+    {n:'Ecuador',lat:-2,lon:-78},{n:'Bolivia',lat:-17,lon:-64},{n:'Etiopía',lat:9,lon:39},
+    {n:'Tanzania',lat:-6,lon:35},{n:'Kenia',lat:-1,lon:38},{n:'Marruecos',lat:32,lon:-5},
+    {n:'Angola',lat:-12,lon:18},{n:'Vietnam',lat:16,lon:107},{n:'Tailandia',lat:14,lon:101},
+    {n:'Malasia',lat:4,lon:109},{n:'Iraq',lat:33,lon:44},{n:'Polonia',lat:52,lon:19},
+    {n:'Rumania',lat:46,lon:25},{n:'Mongolia',lat:47,lon:103},{n:'N. Zelanda',lat:-41,lon:173},
+    {n:'Noruega',lat:65,lon:14},{n:'Suecia',lat:62,lon:16},{n:'Libia',lat:27,lon:17},
+    {n:'Birmania',lat:20,lon:96},{n:'Sudán',lat:16,lon:30},{n:'Afganistán',lat:33,lon:65},
+  ];
+  sc.textAlign='center'; sc.textBaseline='middle';
+  sc.font='7px Rajdhani,sans-serif';
+  LBLS.forEach(l=>{
+    const p=proj([l.lon,l.lat]); if(!p)return;
+    sc.fillStyle='rgba(80,200,120,0.35)';
+    sc.fillText(l.n,p[0],p[1]);
+  });
+}
+
+// Quadratic bezier
+function qb(p0,p1,p2,t){return(1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
+
+// HOME position
+function homePos(){return proj?proj([TARGETS_MAP[0].lon,TARGETS_MAP[0].lat]):null;}
+
+// ════════════════════════════════════════════════
+// SPAWN ATTACK — source → random target (global)
+// ════════════════════════════════════════════════
+function spawnArc(){
+  if(!proj)return;
+
+  // Weighted source selection
+  const total=SOURCES.reduce((s,x)=>s+x.w,0);
+  let r=Math.random()*total, src=SOURCES[0];
+  for(const s of SOURCES){r-=s.w;if(r<=0){src=s;break;}}
+
+  // Random target (weighted toward home)
+  const useHome = Math.random()<0.35;
+  const tgt = useHome ? TARGETS_MAP[0] : TARGETS_MAP[1+Math.floor(Math.random()*(TARGETS_MAP.length-1))];
+
+  const fp=proj([src.lon,src.lat]);
+  const tp=proj([tgt.lon,tgt.lat]);
+  if(!fp||!tp)return;
+
+  const col=ARC_COLORS[Math.floor(Math.random()*ARC_COLORS.length)];
+  const type=ATK_TYPES[Math.floor(Math.random()*ATK_TYPES.length)];
+
+  arcs.push({
+    fx:fp[0],fy:fp[1],tx:tp[0],ty:tp[1],
+    col, type, tgt, src,
+    born:performance.now(),
+    dur:1600+Math.random()*2400,
+    done:false,
+  });
+
+  // Update stats
+  atkTotal++; blkTotal++;
+  document.getElementById('atk-pill').textContent=atkTotal.toLocaleString()+' ataques';
+  document.getElementById('blk-pill').textContent=blkTotal.toLocaleString()+' bloqueados';
+  atkTypeCounts[type.id]=(atkTypeCounts[type.id]||0)+1;
+  countryHits[tgt.cc]=(countryHits[tgt.cc]||0)+1;
+
+  // Ticker
+  addTick(src.f, randIP(), src.c, type.label, type.color);
+
+  // Update right panel every 5 attacks
+  if(atkTotal%5===0){updateRightPanel();}
+}
+
+function randIP(){
+  const a=[45,80,91,103,104,116,117,119,141,162,176,177,180,182,185,188,193,198,200,202,208,212,217,220];
+  return `${a[~~(Math.random()*a.length)]}.${~~(Math.random()*256)}.${~~(Math.random()*256)}.${1+~~(Math.random()*253)}`;
+}
+
+// ════════════════════════════════════════════════
+// RENDER FRAME
+// ════════════════════════════════════════════════
+function renderFrame(){
+  if(!W||!H){requestAnimationFrame(renderFrame);return;}
+  ctx.clearRect(0,0,W,H);
+  if(staticFrame)ctx.drawImage(staticFrame,0,0);
+  else{ctx.fillStyle='#020802';ctx.fillRect(0,0,W,H);}
+
+  const now=performance.now();
+
+  // Impact rings
+  impacts=impacts.filter(im=>{
+    const t=(now-im.born)/im.dur; if(t>=1)return false;
+    const r=im.maxR*t, a=1-t;
+    ctx.beginPath();ctx.arc(im.x,im.y,r,0,Math.PI*2);
+    ctx.strokeStyle=im.col+Math.round(a*0.7*255).toString(16).padStart(2,'0');
+    ctx.lineWidth=1.5;ctx.stroke();
+    if(r>5){
+      const g=ctx.createRadialGradient(im.x,im.y,0,im.x,im.y,r);
+      g.addColorStop(0,im.col+Math.round(a*0.2*255).toString(16).padStart(2,'0'));
+      g.addColorStop(1,im.col+'00');
+      ctx.beginPath();ctx.arc(im.x,im.y,r,0,Math.PI*2);
+      ctx.fillStyle=g;ctx.fill();
+    }
+    return true;
+  });
+
+  // HOME pulse
+  const hp=homePos();
+  if(hp){
+    const pulse=Math.sin(now/500)*0.5+0.5;
+    [20,13,7].forEach((r,i)=>{
+      ctx.beginPath();ctx.arc(hp[0],hp[1],r+pulse*4,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,255,136,${0.06+pulse*(0.1-i*0.02)})`;
+      ctx.lineWidth=1;ctx.stroke();
+    });
+    const cg=ctx.createRadialGradient(hp[0],hp[1],0,hp[0],hp[1],8);
+    cg.addColorStop(0,'rgba(0,255,136,.6)');cg.addColorStop(1,'rgba(0,255,136,0)');
+    ctx.beginPath();ctx.arc(hp[0],hp[1],8,0,Math.PI*2);ctx.fillStyle=cg;ctx.fill();
+    ctx.beginPath();ctx.arc(hp[0],hp[1],4,0,Math.PI*2);ctx.fillStyle='#00ff88';ctx.fill();
+    ctx.save();ctx.shadowColor='#00ff88';ctx.shadowBlur=8;
+    ctx.font='bold 9px Rajdhani,sans-serif';
+    ctx.fillStyle='#00ff88';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('▲ Quito — FAE',hp[0]+8,hp[1]-3);ctx.restore();
+  }
+
+  // Arcs — Norse multicolor style
+  arcs=arcs.filter(arc=>{
+    const elapsed=now-arc.born, t=Math.min(elapsed/arc.dur,1);
+    const mx=(arc.fx+arc.tx)/2;
+    const dist=Math.hypot(arc.fx-arc.tx,arc.fy-arc.ty);
+    const my=Math.min(arc.fy,arc.ty)-dist*0.38;
+
+    const SEGS=50, tail=Math.max(0,t-0.42);
+    for(let i=0;i<SEGS;i++){
+      const t1=tail+(t-tail)*(i/SEGS);
+      const t2=tail+(t-tail)*((i+1)/SEGS);
+      if(t2>t)break;
+      const x1=qb(arc.fx,mx,arc.tx,t1),y1=qb(arc.fy,my,arc.ty,t1);
+      const x2=qb(arc.fx,mx,arc.tx,t2),y2=qb(arc.fy,my,arc.ty,t2);
+      const a=(i/SEGS)*0.85;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+      ctx.strokeStyle=arc.col+Math.round(a*255).toString(16).padStart(2,'0');
+      ctx.lineWidth=1.5;ctx.stroke();
+    }
+
+    const hx=qb(arc.fx,mx,arc.tx,t),hy=qb(arc.fy,my,arc.ty,t);
+    // Bright head glow
+    const hg=ctx.createRadialGradient(hx,hy,0,hx,hy,7);
+    hg.addColorStop(0,arc.col+'cc');hg.addColorStop(1,arc.col+'00');
+    ctx.beginPath();ctx.arc(hx,hy,7,0,Math.PI*2);ctx.fillStyle=hg;ctx.fill();
+    ctx.beginPath();ctx.arc(hx,hy,2.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.beginPath();ctx.arc(hx,hy,1.5,0,Math.PI*2);ctx.fillStyle=arc.col;ctx.fill();
+
+    if(t>=1&&!arc.done){
+      arc.done=true;
+      impacts.push({x:arc.tx,y:arc.ty,col:arc.col,maxR:24,born:now,dur:700});
+      impacts.push({x:arc.tx,y:arc.ty,col:arc.col,maxR:14,born:now+120,dur:500});
+    }
+    if(arc.done){const ft=(now-(arc.born+arc.dur))/800;return ft<1;}
+    return t<1;
+  });
+
+  requestAnimationFrame(renderFrame);
+}
+
+// ════════════════════════════════════════════════
+// RIGHT PANEL
+// ════════════════════════════════════════════════
+function updateRightPanel(){
+  // Attack types
+  const maxV=Math.max(...Object.values(atkTypeCounts));
+  document.getElementById('atktypes').innerHTML=ATK_TYPES.map(a=>{
+    const v=atkTypeCounts[a.id]||0;
+    const pct=maxV>0?Math.round((v/maxV)*100):0;
+    return `<div class="stat-row">
+      <div class="stype" style="color:${a.color}">${a.label}</div>
+      <div class="sbar-wrap"><div class="sbar" style="width:${pct}%;background:${a.color}"></div></div>
+      <div class="scount" style="color:${a.color}">${v.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+
+  // Top attacked countries
+  const sorted=Object.entries(countryHits).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  document.getElementById('clist').innerHTML=sorted.map(([cc,cnt],i)=>{
+    const tgt=TARGETS_MAP.find(t=>t.cc===cc);
+    const flag=tgt?tgt.f:'🌍';
+    const isHome=tgt&&tgt.home;
+    return `<div class="crow">
+      <div class="crank">#${i+1}</div>
+      <div class="cflag">${flag}</div>
+      <div class="cname" style="color:${isHome?'#00ff88':'#80c090'}">${cc}</div>
+      <div class="ccount">${cnt.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+// TICKER
+// ════════════════════════════════════════════════
+const TICKS=[];
+let tickX=0;
+function addTick(flag,ip,city,type,color){
+  const cls=color==='#ff4060'?'c':color==='#ffb020'?'h':'m';
+  TICKS.push(`<div class="ti"><span class="tfl">${flag}</span><span class="tip">${ip}</span><span style="color:#2a7a4a;font-size:8.5px">${city}</span><span class="ttype ${cls}">${type}</span></div>`);
+  if(TICKS.length>100)TICKS.shift();
+  const el=document.getElementById('tinner');
+  const html=TICKS.join('');
+  el.innerHTML=html+html;
+}
+function animTicker(){
+  const el=document.getElementById('tinner');
+  if(el&&el.children.length){
+    const half=el.scrollWidth/2;
+    tickX-=0.5; if(tickX<=-half)tickX=0;
+    el.style.transform=`translateX(${tickX}px)`;
+  }
+  requestAnimationFrame(animTicker);
+}
+
+// Wave scheduler — 3-6 arcs alive like Norse map
+function wave(){
+  const n=2+Math.floor(Math.random()*3);
+  for(let i=0;i<n;i++)setTimeout(spawnArc,i*250+Math.random()*350);
+  setTimeout(wave,800+Math.random()*1200);
+}
+
+function resize(){
+  const el=canvas.parentElement;
+  W=el.clientWidth; H=el.clientHeight;
+  canvas.width=W; canvas.height=H;
+  proj=makeProj(W,H); staticFrame=null;
+  if(worldGeo||!loadingWorld)bakeWorld();
+}
+let loadingWorld=false;
+window.addEventListener('resize',resize);
+
+// BOOT
+loadingWorld=true;
+updateRightPanel();
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(world=>{
+    worldGeo={
+      features:topojson.feature(world,world.objects.countries).features,
+      mesh:topojson.mesh(world,world.objects.countries,(a,b)=>a!==b),
+    };
+    bakeWorld(); loadingWorld=false;
+  }).catch(()=>{loadingWorld=false;bakeWorld();});
+
+renderCards();
+setTimeout(()=>{
+  resize(); renderFrame(); animTicker();
+  setTimeout(wave,1000);
+  startCheck(); setInterval(startCheck,60000);
+},200);
+</script>
+</body>
+</html>
